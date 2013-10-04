@@ -3,13 +3,6 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 object Main {
-  def printMap[K, V](map: mutable.HashMap[(K, K), V]) {
-    map.map { case ((row, column), value) =>
-      println(s"[$row, $column] = ${value.toString.toFloat.formatted("%.2f")}")
-    }
-    println()
-  }
-
   def buildSparseFromFile(fileName: String): (Int, mutable.HashMap[(Int, Int), Double], mutable.HashMap[Int, Double]) = {
     val scanner = new Scanner(io.Source.fromFile(fileName).bufferedReader())
     val size = scanner.nextInt
@@ -42,10 +35,10 @@ object Main {
     val oneMinusAlphaDividedByN = (1d - alpha) / size
     var p = ArrayBuffer.fill(size)(1d / size)
     val alphaPH = ArrayBuffer.fill(size)(0d)
-    var sumP = 0d
+    var sumPAlpha = 0d
 
     (0 until 1000).foreach { index =>
-      sumP = p.sum
+      sumPAlpha = p.sum * oneMinusAlphaDividedByN
       p.transform(alpha *)
 
       alphaPH.transform(i => 0d)
@@ -53,7 +46,7 @@ object Main {
         alphaPH(column) += p(row) * value
       }
 
-      p = alphaPH.map(sumP * oneMinusAlphaDividedByN + d.map { case (row, value) => p(row) * value }.sum +)
+      p = alphaPH.map(sumPAlpha + d.map { case (row, value) => p(row) * value }.sum +)
     }
 
     p.zipWithIndex.sorted.map { case (value, index) =>
