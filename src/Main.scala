@@ -13,7 +13,6 @@ object Main {
   def buildSparseFromFile(fileName: String): (Int, mutable.HashMap[(Int, Int), Double], mutable.HashMap[Int, Double]) = {
     val scanner = new Scanner(io.Source.fromFile(fileName).bufferedReader())
     val size = scanner.nextInt
-
     val A = new mutable.HashMap[(Int, Int), Int]
     val rowCount = new mutable.HashMap[Int, Int]
 
@@ -42,28 +41,22 @@ object Main {
     val alpha = 0.85d
     val oneMinusAlphaDividedByN = (1d - alpha) / size
     var p = ArrayBuffer.fill(size)(1d / size)
+    val alphaPH = ArrayBuffer.fill(size)(0d)
+    var sumP = 0d
 
-    (0 until 100).foreach { index =>
-      // Part 1
-      val alphaP = p.map(alpha *)
-      val alphaPH = ArrayBuffer.fill(size)(0d)
+    (0 until 1000).foreach { index =>
+      sumP = p.sum
+      p.transform(alpha *)
+
+      alphaPH.transform(i => 0d)
       h.foreach { case ((row, column), value) =>
-        alphaPH(column) += alphaP(row) * value
+        alphaPH(column) += p(row) * value
       }
 
-      // Part 2
-      val sumD =
-        d.map { case (row, value) =>
-          alphaP(row) * value
-        }.sum
-
-      // Part 3
-      val oneMinusAlphaDividedByNP = p.sum * oneMinusAlphaDividedByN
-
-      p = alphaPH.map(oneMinusAlphaDividedByNP + sumD +)
+      p = alphaPH.map(sumP * oneMinusAlphaDividedByN + d.map { case (row, value) => p(row) * value }.sum +)
     }
 
-    p.zipWithIndex.sorted.reverse.map { case (value, index) =>
+    p.zipWithIndex.sorted.map { case (value, index) =>
       println(s"$index: $value")
     }
   }
