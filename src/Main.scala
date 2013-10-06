@@ -50,7 +50,7 @@ object Main {
     }
 
     p.zipWithIndex.sorted.map { case (value, index) =>
-      println(s"$index: $value")
+      println(s"$index: ${value.formatted("%.2f")}")
     }
   }
 }
